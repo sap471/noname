@@ -1,0 +1,7 @@
+{
+  "verbose": true,
+  "ignore": ["*.test.js", ".gitignore", "dist"],
+  "watch": ["src/*.ts"],
+  "ext": "ts,json,js",
+  "exec": "ts-node --transpile-only ./src/index.ts"
+}
