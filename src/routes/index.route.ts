@@ -9,5 +9,9 @@ export default <FastifyPluginCallback>function (fastify, options, done) {
     body: req.body,
   }));
 
+  fastify.get("/checkhealth", async (req, res) => {
+    return res.status(204).send({ message: "ok" });
+  });
+
   done();
 };
