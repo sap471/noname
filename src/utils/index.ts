@@ -1,6 +1,6 @@
 import fs from 'fs'
 
-const isProd: boolean = process.env.NODE_ENV == 'production'
+export const isProd: boolean = process.env.NODE_ENV == 'production'
 
 const fileExists = (file: fs.PathLike) =>
   new Promise((resolve) => fs.access(file, fs.constants.F_OK, (err) => resolve(!err)))

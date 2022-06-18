@@ -1,31 +1,13 @@
-import createFastify from 'fastify'
-import fastifySensible from '@fastify/sensible'
-import fastifyCors from '@fastify/cors'
-import { v4 } from 'uuid'
-import fastifyAutoload from '@fastify/autoload'
+import { createApp } from './app'
 
-export default async function startApp() {
-  try {
-    const app = createFastify({
-      logger: true,
-      genReqId: () => v4(),
-    })
-
-    app.register(fastifySensible)
-    app.register(fastifyCors)
-
-    app.register(fastifyAutoload, {
-      dir: __dirname + '/routes',
-      scriptPattern: /.*\.route\.(ts|js|cjs|mjs)$/,
-    })
-
+createApp()
+  .then((app) => {
     app.listen({
       port: Number(process.env.PORT) || 8080,
+      host: '0.0.0.0',
     })
-  } catch (error) {
-    throw error
+  })
+  .catch((err) => {
+    console.error(err)
     process.exit(1)
-  }
-}
-
-startApp()
+  })

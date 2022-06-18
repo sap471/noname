@@ -1,0 +1,7 @@
+
+@baseurl = http://localhost:8080
+
+POST {{baseurl}}/todo/124/delete HTTP/1.1
+
+###
+POST {{baseurl}}/todo/124/update HTTP/1.1
