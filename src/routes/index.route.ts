@@ -6,7 +6,6 @@ export default <FastifyPluginCallback>function (fastify, options, done) {
     statusCode: res.statusCode,
     ip: req.headers['cf-connecting-ip'] ?? req.headers['x-forwarded-for'],
     method: req.method,
-    // headers: req.headers,
     body: req.body,
     userAgent: req.headers['user-agent'],
   }))

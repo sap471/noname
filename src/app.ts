@@ -6,6 +6,7 @@ import fastifyAutoload from '@fastify/autoload'
 import { isProd } from './utils'
 import fastifyHelmet from '@fastify/helmet'
 import fastifyRateLimit from '@fastify/rate-limit'
+import puppeteerPlugin from './plugins/puppeteer.plugin'
 
 declare module 'fastify' {
   interface FastifyInstance {}
@@ -55,9 +56,10 @@ export async function createApp() {
     scriptPattern: /.*\.route\.(ts|js|cjs|mjs)$/,
   })
 
-  // app.register(puppeteerPlugin, {
-  //   browserIdleTimeout: 60,
-  // })
+  app.register(puppeteerPlugin, {
+    runOnStart: true,
+    browserIdleTimeout: 60,
+  })
 
   return app
 }
