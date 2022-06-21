@@ -105,3 +105,4 @@ dist
 
 # Test Folder
 test
+storage/**

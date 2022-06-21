@@ -2,11 +2,13 @@ import { FastifyPluginCallback } from 'fastify'
 
 export default <FastifyPluginCallback>function (fastify, options, done) {
   fastify.get('/', async (req, res) => ({
-    message: 'HELLO WORLD',
-    yourIp: req.headers['x-forwarded-for'],
+    message: 'Halo Manusia',
+    statusCode: res.statusCode,
+    ip: req.headers['cf-connecting-ip'] ?? req.headers['x-forwarded-for'],
     method: req.method,
-    headers: req.headers,
+    // headers: req.headers,
     body: req.body,
+    userAgent: req.headers['user-agent'],
   }))
 
   fastify.get('/checkhealth', async (req, res) => {

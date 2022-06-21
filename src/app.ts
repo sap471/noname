@@ -5,6 +5,7 @@ import { v4 } from 'uuid'
 import fastifyAutoload from '@fastify/autoload'
 import { isProd } from './utils'
 import fastifyHelmet from '@fastify/helmet'
+import fastifyRateLimit from '@fastify/rate-limit'
 
 declare module 'fastify' {
   interface FastifyInstance {}
@@ -21,7 +22,7 @@ export async function createApp() {
         : {
             target: 'pino-pretty',
             options: {
-              translateTime: 'HH:MM:ss Z',
+              translateTime: 'd-mm-yy HH:MM:ss Z',
               ignore: 'pid,hostname',
             },
           },
@@ -31,6 +32,21 @@ export async function createApp() {
   })
 
   app.register(fastifySensible)
+
+  app.register(fastifyRateLimit, {
+    global: false,
+    max: 3000,
+    errorResponseBuilder(req, context) {
+      return {
+        code: 429,
+        error: 'Too Many Requests',
+        message: `I only allow ${context.max} requests per ${context.after} to this Website. Try again soon.`,
+        date: Date.now(),
+        expiresIn: context.ttl, // milliseconds
+      }
+    },
+  })
+
   app.register(fastifyCors, {})
   // app.register(fastifyHelmet, {})
 
