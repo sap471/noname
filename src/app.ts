@@ -57,7 +57,7 @@ export async function createApp() {
   })
 
   app.register(puppeteerPlugin, {
-    runOnStart: true,
+    runOnStart: false,
     browserIdleTimeout: 60,
   })
 
