@@ -114,13 +114,13 @@ export const puppeteerPlugin: FastifyPluginAsync = async (
 
     logger.info('browser launched')
 
-    if (process.env['PUPPETEER_WSENDPOINT']) {
-      browser = await puppeteer.connect({
-        browserWSEndpoint: process.env['PUPPETEER_WSENDPOINT'],
-      })
-    } else {
-      browser = await puppeteer.launch(launchOptions)
-    }
+    // if (process.env['PUPPETEER_WSENDPOINT']) {
+    //   browser = await puppeteer.connect({
+    //     browserWSEndpoint: process.env['PUPPETEER_WSENDPOINT'],
+    //   })
+    // } else {
+    // browser = await puppeteer.launch(launchOptions)
+    // }
 
     browser = await puppeteer.launch(launchOptions)
 
