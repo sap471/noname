@@ -1,7 +1,6 @@
 import { ScreenshotOptions } from 'puppeteer'
 import { FastifyPluginAsync, FastifyPluginCallback } from 'fastify'
 import { JSONSchemaType } from 'ajv'
-import { blockedDomains } from '../plugins/puppeteer.plugin'
 
 enum ImageType {
   WEBP = 'webp',
@@ -61,16 +60,23 @@ export default <FastifyPluginAsync>async function (fastify) {
       const page = await browser.newPage()
 
       await page.setViewport({ height, width, deviceScaleFactor: 1, hasTouch: false })
-      await page._client().send('Animation.disable')
-      await page.setRequestInterception(true)
-      page.on('request', (request) => {
-        const url = request.url()
-        if (blockedDomains.some((domain) => url.includes(domain))) {
-          request.abort()
-        } else {
-          request.continue()
-        }
+
+      // disable animation puppeteer 19
+      await page.addStyleTag({
+        content: `
+      *,
+      *::after,
+      *::before {
+          transition-delay: 0s !important;
+          transition-duration: 0s !important;
+          animation-delay: -0.0001s !important;
+          animation-duration: 0s !important;
+          animation-play-state: paused !important;
+          caret-color: transparent !important;
+      }`,
       })
+
+      await page.setRequestInterception(true)
 
       try {
         await page.goto(weburl, { waitUntil: 'networkidle2', timeout: 30000 })

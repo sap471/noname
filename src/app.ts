@@ -3,6 +3,7 @@ import fastifySensible from '@fastify/sensible'
 import fastifyCors from '@fastify/cors'
 import { v4 } from 'uuid'
 import fastifyAutoload from '@fastify/autoload'
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { isProd } from './utils'
 import fastifyHelmet from '@fastify/helmet'
 import fastifyRateLimit from '@fastify/rate-limit'
@@ -30,7 +31,7 @@ export async function createApp() {
     },
     genReqId: () => v4(),
     trustProxy: true,
-  })
+  }).withTypeProvider<TypeBoxTypeProvider>()
 
   app.register(fastifySensible)
 
@@ -58,7 +59,10 @@ export async function createApp() {
 
   app.register(puppeteerPlugin, {
     runOnStart: false,
-    browserIdleTimeout: 60,
+    browserIdleTimeout: 600,
+    userAgent:
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+    acceptLanguage: 'en-US',
   })
 
   return app

@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyPluginAsync } from 'fastify'
 import fp from 'fastify-plugin'
+import os from 'os'
 import {
   Browser,
   LaunchOptions,
@@ -7,6 +8,11 @@ import {
   BrowserLaunchArgumentOptions,
 } from 'puppeteer'
 import puppeteer from 'puppeteer-extra'
+import stealthPlugin from 'puppeteer-extra-plugin-stealth'
+import adBlockPlugin from 'puppeteer-extra-plugin-adblocker'
+
+puppeteer.use(stealthPlugin())
+puppeteer.use(adBlockPlugin({ blockTrackers: true }))
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -29,6 +35,8 @@ const pluginOptions: puppeteerPluginOptions = {
   launchOptions: {
     headless: true,
     waitForInitialPage: false,
+    ignoreHTTPSErrors: true,
+    // userDataDir: '/tmp',
     args: [
       '--no-sandbox',
       '--autoplay-policy=user-gesture-required',
@@ -73,8 +81,6 @@ const pluginOptions: puppeteerPluginOptions = {
   userAgent: '',
   acceptLanguage: '',
 }
-
-export const blockedDomains: string[] = ['googlesyndication.com', 'adservice.google.com']
 
 export const puppeteerPlugin: FastifyPluginAsync = async (
   fastify: FastifyInstance,
@@ -122,7 +128,10 @@ export const puppeteerPlugin: FastifyPluginAsync = async (
     // browser = await puppeteer.launch(launchOptions)
     // }
 
-    browser = await puppeteer.launch(launchOptions)
+    browser = await puppeteer.launch({
+      ...launchOptions,
+      executablePath: detectGoogleChromeExecutable(),
+    })
 
     browser.on('targetcreated', () => {
       logger.info('new tab created')
@@ -150,6 +159,21 @@ export const puppeteerPlugin: FastifyPluginAsync = async (
       .then(() => done)
       .catch((reason) => done(reason)),
   )
+}
+
+/** use google chrome as default browser */
+const detectGoogleChromeExecutable = () => {
+  // https://stackoverflow.com/a/625902682
+  const osPlatform = os.platform()
+  let executablePath = undefined
+  if (/^win/i.test(osPlatform)) {
+    executablePath =
+      os.arch() == 'x64' ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' : undefined
+  } else if (/^linux/i.test(osPlatform)) {
+    executablePath = '/usr/bin/google-chrome'
+  }
+
+  return executablePath
 }
 
 export default fp<Partial<puppeteerPluginOptions>>(puppeteerPlugin, {
